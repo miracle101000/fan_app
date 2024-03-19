@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "96286293654",
+    "project_id": "fan-app-4cff1",
+    "storage_bucket": "fan-app-4cff1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96286293654:android:e86f776b1b7301e459ccb7",
+        "android_client_info": {
+          "package_name": "com.dkay.fanapp.fan_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9V8qOOmaB3ULoXGteZd23ILfr4_IAKxo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
