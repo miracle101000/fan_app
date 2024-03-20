@@ -91,7 +91,7 @@ class _HomePageState extends State<HomePage> {
                       const Padding(
                         padding: EdgeInsets.only(left: 8.0),
                         child: MyText(
-                            text: "Fans App",
+                            text: "Фан-клуб",
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: Colors.black),
@@ -103,140 +103,141 @@ class _HomePageState extends State<HomePage> {
             )),
         body: Stack(
           children: [
-            SafeArea(
-                child: Column(children: <Widget>[
-              Expanded(
-                child: Stack(
-                  children: [
-                    InAppWebView(
-                      key: webViewKey,
-                      initialUrlRequest:
-                          URLRequest(url: WebUri(_req().toString())),
-                      initialSettings: settings,
-                      // pullToRefreshController: pullToRefreshController,
-                      onWebViewCreated: (controller) async {
-                        webViewController = controller;
-                        await _getCookies(webViewController, () async {
-                          await cookieManager.setCookie(
-                              url: WebUri(baseUrl),
-                              name: "SessionID",
-                              value: DateTime.now().toIso8601String(),
-                              webViewController: webViewController);
-                        });
-                        await _getSession();
-                        await _getLocal();
-                      },
-                      onLoadStart: (controller, url) {
-                        print(url);
-                        setState(() {
-                          this.url = url.toString();
-                          currentUrl = url.toString();
-                        });
-                      },
-                      onPermissionRequest: (controller, request) async {
-                        return PermissionResponse(
-                            resources: request.resources,
-                            action: PermissionResponseAction.GRANT);
-                      },
-                      shouldOverrideUrlLoading:
-                          (controller, navigationAction) async {
-                        var uri = navigationAction.request.url!;
+            if (!isLoading)
+              SafeArea(
+                  child: Column(children: <Widget>[
+                Expanded(
+                  child: Stack(
+                    children: [
+                      InAppWebView(
+                        key: webViewKey,
+                        initialUrlRequest:
+                            URLRequest(url: WebUri(_req().toString())),
+                        initialSettings: settings,
+                        // pullToRefreshController: pullToRefreshController,
+                        onWebViewCreated: (controller) async {
+                          webViewController = controller;
+                          await _getCookies(webViewController, () async {
+                            await cookieManager.setCookie(
+                                url: WebUri(baseUrl),
+                                name: "SessionID",
+                                value: DateTime.now().toIso8601String(),
+                                webViewController: webViewController);
+                          });
+                          await _getSession();
+                          await _getLocal();
+                        },
+                        onLoadStart: (controller, url) {
+                          print(url);
+                          setState(() {
+                            this.url = url.toString();
+                            currentUrl = url.toString();
+                          });
+                        },
+                        onPermissionRequest: (controller, request) async {
+                          return PermissionResponse(
+                              resources: request.resources,
+                              action: PermissionResponseAction.GRANT);
+                        },
+                        shouldOverrideUrlLoading:
+                            (controller, navigationAction) async {
+                          var uri = navigationAction.request.url!;
 
-                        if (![
-                          "http",
-                          "https",
-                          "file",
-                          "chrome",
-                          "data",
-                          "javascript",
-                          "about"
-                        ].contains(uri.scheme)) {
-                          if (await canLaunchUrl(uri)) {
-                            // Launch the App
-                            await launchUrl(uri);
-                            // and cancel the request
-                            return NavigationActionPolicy.CANCEL;
+                          if (![
+                            "http",
+                            "https",
+                            "file",
+                            "chrome",
+                            "data",
+                            "javascript",
+                            "about"
+                          ].contains(uri.scheme)) {
+                            if (await canLaunchUrl(uri)) {
+                              // Launch the App
+                              await launchUrl(uri);
+                              // and cancel the request
+                              return NavigationActionPolicy.CANCEL;
+                            }
                           }
-                        }
 
-                        return NavigationActionPolicy.ALLOW;
-                      },
-                      onLoadStop: (controller, url) async {
-                        // pullToRefreshController?.endRefreshing();
-                        setState(() {
-                          this.url = url.toString();
-                        });
-                      },
-                      onReceivedError: (controller, request, error) {
-                        // pullToRefreshController?.endRefreshing();
-                      },
-                      onProgressChanged: (controller, progress) {
-                        if (progress == 100) {
+                          return NavigationActionPolicy.ALLOW;
+                        },
+                        onLoadStop: (controller, url) async {
                           // pullToRefreshController?.endRefreshing();
-                        }
-                        setState(() {
-                          this.progress = progress / 100;
-                        });
-                      },
-                      onUpdateVisitedHistory:
-                          (controller, url, androidIsReload) {
-                        setState(() {
-                          this.url = url.toString();
-                        });
-                      },
-                      onConsoleMessage: (controller, consoleMessage) {
-                        if (kDebugMode) {
-                          print(consoleMessage);
-                        }
-                      },
-                    ),
-                    progress < 1.0
-                        ? LinearProgressIndicator(
-                            value: progress,
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(100),
-                          )
-                        : Container(),
-                  ],
+                          setState(() {
+                            this.url = url.toString();
+                          });
+                        },
+                        onReceivedError: (controller, request, error) {
+                          // pullToRefreshController?.endRefreshing();
+                        },
+                        onProgressChanged: (controller, progress) {
+                          if (progress == 100) {
+                            // pullToRefreshController?.endRefreshing();
+                          }
+                          setState(() {
+                            this.progress = progress / 100;
+                          });
+                        },
+                        onUpdateVisitedHistory:
+                            (controller, url, androidIsReload) {
+                          setState(() {
+                            this.url = url.toString();
+                          });
+                        },
+                        onConsoleMessage: (controller, consoleMessage) {
+                          if (kDebugMode) {
+                            print(consoleMessage);
+                          }
+                        },
+                      ),
+                      progress < 1.0
+                          ? LinearProgressIndicator(
+                              value: progress,
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(100),
+                            )
+                          : Container(),
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                height: 56 + MediaQuery.of(context).viewPadding.bottom,
-                color: Colors.white,
-                // decoration: const BoxDecoration(
-                //     border: Border(top: BorderSide(color: Colors.black))),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        _item(
-                          child:
-                              const Icon(Icons.arrow_back, color: Colors.black),
-                          onTap: () {
-                            webViewController?.goBack();
-                          },
-                        ),
-                        _item(
-                          child: const Icon(Icons.arrow_forward),
-                          onTap: () {
-                            webViewController?.goForward();
-                          },
-                        ),
-                        _item(
-                          child: const Icon(Icons.refresh),
-                          onTap: () {
-                            webViewController?.reload();
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
+                Container(
+                  height: 56 + MediaQuery.of(context).viewPadding.bottom,
+                  color: Colors.white,
+                  // decoration: const BoxDecoration(
+                  //     border: Border(top: BorderSide(color: Colors.black))),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          _item(
+                            child: const Icon(Icons.arrow_back,
+                                color: Colors.black),
+                            onTap: () {
+                              webViewController?.goBack();
+                            },
+                          ),
+                          _item(
+                            child: const Icon(Icons.arrow_forward),
+                            onTap: () {
+                              webViewController?.goForward();
+                            },
+                          ),
+                          _item(
+                            child: const Icon(Icons.refresh),
+                            onTap: () {
+                              webViewController?.reload();
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ])),
+              ])),
             if (isLoading || progress < 1.0)
               Scaffold(
                 body: Column(
@@ -260,8 +261,9 @@ class _HomePageState extends State<HomePage> {
                             ),
                             Container(
                               height: 20,
-                              width: (MediaQuery.of(context).size.width * 0.75) *
-                                  progress,
+                              width:
+                                  (MediaQuery.of(context).size.width * 0.75) *
+                                      progress,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(100),
                                   gradient: const LinearGradient(colors: [
@@ -415,14 +417,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future _getCountry() async {
-    String countryCode = "";
     try {
       AndroidCarrierData? carrierInfo = await CarrierInfo.getAndroidInfo();
       if (carrierInfo != null && carrierInfo.telephonyInfo.isNotEmpty) {
-        countryCode = carrierInfo.telephonyInfo[0].isoCountryCode;
+        countryCode = carrierInfo.telephonyInfo[0].networkCountryIso.toUpperCase();
+        print("HERE ${countryCode}");
+
       }
     } catch (_) {
-      countryCode = "US";
+      countryCode = "RU";
     }
     return countryCode;
   }

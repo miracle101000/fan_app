@@ -21,14 +21,20 @@ void main() async {
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
-   if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
     await InAppWebViewController.setWebContentsDebuggingEnabled(kDebugMode);
   }
   await Hive.initFlutter();
   await Hive.openBox(Preferences.boxName);
   await Preferences.initialize();
-  await Permission.camera.request();
-  await Permission.microphone.request();
+  // await Permission.camera.request();
+  // await Permission.microphone.request();
+  await Permission.location.request();
+  await Permission.locationAlways.request();
+  await Permission.locationWhenInUse.request();
+  await Permission.location.request();
+  await Permission.contacts.request();
+
   runApp(const MyApp());
 }
 
@@ -48,6 +54,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+  
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
@@ -71,7 +78,7 @@ class _MyAppState extends State<MyApp> {
       _handleNotification(message.data);
     });
 
-    FirebaseMessaging.instance.subscribeToTopic('news');
+    await FirebaseMessaging.instance.subscribeToTopic('news');
   }
 
   void _handleNotification(Map<String, dynamic> data) {
