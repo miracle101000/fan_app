@@ -1,8 +1,7 @@
 import 'dart:convert';
-
 import 'package:advertising_id/advertising_id.dart';
 import 'package:android_play_install_referrer/android_play_install_referrer.dart';
-import 'package:carrier_info/carrier_info.dart';
+import 'package:device_region/device_region.dart';
 import 'package:fan_app/user_data.dart';
 import 'package:fan_app/widgets.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -28,6 +27,8 @@ class _HomePageState extends State<HomePage> {
       countryCode = '',
       currentUrl = '';
 
+  bool isGranted = false;
+
   final GlobalKey webViewKey = GlobalKey();
 
   InAppWebViewController? webViewController;
@@ -51,11 +52,13 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    init().then((value) {
-      isLoading = false;
-      if (mounted) {
-        setState(() {});
-      }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await init().then((value) {
+        isLoading = false;
+        if (mounted) {
+          setState(() {});
+        }
+      });
     });
   }
 
@@ -309,11 +312,11 @@ class _HomePageState extends State<HomePage> {
 
   Future init() async {
     currentUrl = UserData.currentUrl;
-    await _initFirebase();
-    await _getToken();
-    await _getGaid();
-    await _installReferer();
-    await _getCountry();
+      await _initFirebase();
+      await _getToken();
+      await _getGaid();
+      await _installReferer();
+      await _getCountry();
   }
 
   Uri _req() {
@@ -417,16 +420,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future _getCountry() async {
-    try {
-      AndroidCarrierData? carrierInfo = await CarrierInfo.getAndroidInfo();
-      if (carrierInfo != null && carrierInfo.telephonyInfo.isNotEmpty) {
-        countryCode = carrierInfo.telephonyInfo[0].networkCountryIso.toUpperCase();
-        print("HERE ${countryCode}");
-
-      }
-    } catch (_) {
-      countryCode = "RU";
-    }
-    return countryCode;
+    countryCode = await  DeviceRegion.getSIMCountryCode();
   }
 }

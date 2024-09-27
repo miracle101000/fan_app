@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:fan_app/home.dart';
 import 'package:fan_app/preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -9,8 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
-
 import 'messaging.dart';
 
 void main() async {
@@ -27,14 +24,6 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox(Preferences.boxName);
   await Preferences.initialize();
-  // await Permission.camera.request();
-  // await Permission.microphone.request();
-  await Permission.location.request();
-  await Permission.locationAlways.request();
-  await Permission.locationWhenInUse.request();
-  await Permission.location.request();
-  await Permission.contacts.request();
-
   runApp(const MyApp());
 }
 
@@ -50,11 +39,11 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _initFcm();
+
   }
 
   @override
   Widget build(BuildContext context) {
-  
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
@@ -85,3 +74,4 @@ class _MyAppState extends State<MyApp> {
     // Handle notification data (e.g., show custom notification or open deep link)
   }
 }
+

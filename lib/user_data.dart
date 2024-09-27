@@ -39,4 +39,6 @@ class UserData {
     _currentUrl = value;
     Preferences.saveData('currentUrl', value);
   }
+
+ 
 }
